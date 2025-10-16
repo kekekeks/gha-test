@@ -23,7 +23,7 @@ jobs:
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: macos-artifacts
+          name: impeller-sdk-macos-arm64
           path: flutter/engine/src/out/host_debug/zip_archives/darwin-arm64/*.zip
 
   build-ubuntu:
@@ -42,7 +42,7 @@ jobs:
       - name: Upload Ubuntu artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ubuntu-artifacts
+          name: impeller-sdk-linux-x64
           path: flutter/engine/src/out/host_debug/zip_archives/linux-x64/*.zip
 
   create-release:
@@ -63,7 +63,10 @@ jobs:
         run: |
           echo "RELEASE_ID=build-${{ github.run_number }}" >> $GITHUB_ENV
           echo 'This is a cool release' > release.txt  
-          find .
+          mkdir files
+          for dir in artifacts/*; do
+            cp "$dir"/impeller_sdk.zip files/$dir.zip
+          done
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -73,4 +76,4 @@ jobs:
           draft: false
           body_path: ./release.txt
           prerelease: false
-          files: artifacts/**/*.zip
+          files: files/*
