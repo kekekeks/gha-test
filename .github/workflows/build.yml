@@ -15,31 +15,57 @@ jobs:
 
       - name: Check disk space
         run: |
-          echo free space query
-          df -h
-          echo where dotnet
-          which dotnet
-          echo what installed
-          brew list
-          echo space
-          df -h   
+          mkdir -p flutter/engine/src/out/host_debug/zip_archives/darwin-arm64
+          touch flutter/engine/src/out/host_debug/zip_archives/darwin-arm64/impeller_sdk.zip
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-artifacts
+          path: flutter/engine/src/out/host_debug/zip_archives/darwin-arm64/*.zip
 
   build-ubuntu:
-    name: Build on Ubuntu 22.04
+    name: ubuntu
     runs-on: ubuntu-22.04
     if: false
 
     steps:
 
-      - name: Check disk space
+      - name: Test
         run: |
-          df . -h
-          sudo docker images
-          sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true
-          df . -h
-          echo "Removing useless dirs"
-          sudo rm -rf \
-            /usr/share/dotnet /usr/local/lib/android /opt/ghc \
-            /usr/local/share/powershell /usr/share/swift /usr/local/.ghcup \
-            /usr/lib/jvm || true
-          df . -h   
+          mkdir -p flutter/engine/src/out/host_debug/zip_archives/linux-x64
+          touch flutter/engine/src/out/host_debug/zip_archives/linux-x64/impeller_sdk.zip
+
+      - name: Upload Ubuntu artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-artifacts
+          path: flutter/engine/src/out/host_debug/zip_archives/linux-x64/*.zip
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-macos, build-ubuntu]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Generate release id
+        run: |
+          echo "RELEASE_ID=build-${{ github.run_number }}" >> $GITHUB_ENV
+          find .
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.RELEASE_ID }}
+          name: ${{ env.RELEASE_ID }}
+          draft: false
+          prerelease: false
+          files: artifacts/**/*.zip
