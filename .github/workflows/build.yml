@@ -54,15 +54,15 @@ jobs:
       contents: write
 
     steps:
-      - name: Generate release id
-        run: |
-          echo "RELEASE_ID=build-${{ github.run_number }}" >> $GITHUB_ENV
-          find .
-
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+
+      - name: Generate release id
+        run: |
+          echo "RELEASE_ID=build-${{ github.run_number }}" >> $GITHUB_ENV
+          echo 'This is a cool release' > release.txt    
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -70,5 +70,6 @@ jobs:
           tag_name: ${{ env.RELEASE_ID }}
           name: ${{ env.RELEASE_ID }}
           draft: false
+          body_path: ./release.txt
           prerelease: false
           files: artifacts/**/*.zip
