@@ -12,8 +12,7 @@ jobs:
     name: macos-latest
     runs-on: macos-latest
     steps:
-
-      - name: Check disk space
+      - name: Test
         run: |
           echo mac > mac.txt
           zip impeller_sdk.zip mac.txt
@@ -31,7 +30,6 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-
       - name: Test
         run: |
           echo linux > linux.txt
