@@ -65,7 +65,7 @@ jobs:
           echo 'This is a cool release' > release.txt  
           mkdir files
           for dir in artifacts/*; do
-            cp "$dir"/impeller_sdk.zip files/$dir.zip
+            cp "$dir"/impeller_sdk.zip files/`basename $dir`.zip
           done
 
       - name: Create Release
