@@ -8,9 +8,24 @@ on:
   workflow_dispatch:
 
 jobs:
+  build-macos:
+    name: macos-15-large
+    runs-on: macos-15-large
+    if: false
+
+    steps:
+
+      - name: Check disk space
+        run: |
+          df . -h
+          which dotnet
+          brew list
+          df . -h   
+
   build-ubuntu:
     name: Build on Ubuntu 22.04
     runs-on: ubuntu-22.04
+    if: false
 
     steps:
 
