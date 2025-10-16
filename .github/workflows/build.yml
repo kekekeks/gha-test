@@ -27,7 +27,6 @@ jobs:
   build-ubuntu:
     name: ubuntu
     runs-on: ubuntu-22.04
-    if: false
 
     steps:
 
