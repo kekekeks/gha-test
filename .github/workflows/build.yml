@@ -15,8 +15,10 @@ jobs:
 
       - name: Check disk space
         run: |
+          echo mac > mac.txt
+          zip impeller_sdk.zip mac.txt
           mkdir -p flutter/engine/src/out/host_debug/zip_archives/darwin-arm64
-          touch flutter/engine/src/out/host_debug/zip_archives/darwin-arm64/impeller_sdk.zip
+          mv impeller_sdk.zip flutter/engine/src/out/host_debug/zip_archives/darwin-arm64
 
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
@@ -32,8 +34,10 @@ jobs:
 
       - name: Test
         run: |
+          echo linux > linux.txt
+          zip impeller_sdk.zip linux.txt
           mkdir -p flutter/engine/src/out/host_debug/zip_archives/linux-x64
-          touch flutter/engine/src/out/host_debug/zip_archives/linux-x64/impeller_sdk.zip
+          mv impeller_sdk.zip flutter/engine/src/out/host_debug/zip_archives/linux-x64
 
       - name: Upload Ubuntu artifacts
         uses: actions/upload-artifact@v4
