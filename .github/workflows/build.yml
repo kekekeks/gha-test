@@ -17,13 +17,12 @@ jobs:
       - name: Check disk space
         run: |
           df . -h
+          sudo docker images
+          sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true
           df . -h
-
+          echo "Removing useless dirs"
           sudo rm -rf \
             /usr/share/dotnet /usr/local/lib/android /opt/ghc \
             /usr/local/share/powershell /usr/share/swift /usr/local/.ghcup \
             /usr/lib/jvm || true
           df . -h   
-          sudo docker images
-          sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true
-          df . -h
