@@ -1,77 +1,11 @@
-name: Build Flutter Engine
-
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:
-
+name: CI
+on: [push]
 jobs:
-  build-macos:
-    name: macos-latest
-    runs-on: macos-latest
+  build:
+    runs-on: windows-latest
     steps:
-      - name: Test
-        run: |
-          echo mac > mac.txt
-          zip impeller_sdk.zip mac.txt
-          mkdir -p flutter/engine/src/out/host_debug/zip_archives/darwin-arm64
-          mv impeller_sdk.zip flutter/engine/src/out/host_debug/zip_archives/darwin-arm64
-
-      - name: Upload macOS artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: impeller-sdk-macos-arm64
-          path: flutter/engine/src/out/host_debug/zip_archives/darwin-arm64/*.zip
-
-  build-ubuntu:
-    name: ubuntu
-    runs-on: ubuntu-22.04
-
-    steps:
-      - name: Test
-        run: |
-          echo linux > linux.txt
-          zip impeller_sdk.zip linux.txt
-          mkdir -p flutter/engine/src/out/host_debug/zip_archives/linux-x64
-          mv impeller_sdk.zip flutter/engine/src/out/host_debug/zip_archives/linux-x64
-
-      - name: Upload Ubuntu artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: impeller-sdk-linux-x64
-          path: flutter/engine/src/out/host_debug/zip_archives/linux-x64/*.zip
-
-  create-release:
-    name: Create GitHub Release
-    runs-on: ubuntu-latest
-    needs: [build-macos, build-ubuntu]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    permissions:
-      contents: write
-
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Generate release id
-        run: |
-          echo "RELEASE_ID=build-${{ github.run_number }}" >> $GITHUB_ENV
-          echo 'This is a cool release' > release.txt  
-          mkdir files
-          for dir in artifacts/*; do
-            cp "$dir"/impeller_sdk.zip files/`basename $dir`.zip
-          done
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.RELEASE_ID }}
-          name: ${{ env.RELEASE_ID }}
-          draft: false
-          body_path: ./release.txt
-          prerelease: false
-          files: files/*
+    - uses: msys2/setup-msys2@v2
+      id: setup-msys2
+    - uses: mxschmitt/action-tmate@v3
+      with:
+        msys2-location: ${{ steps.setup-msys2.outputs.msys2-location }}
