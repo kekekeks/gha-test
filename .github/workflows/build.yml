@@ -11,8 +11,6 @@ jobs:
   build-macos:
     name: macos-15-large
     runs-on: macos-15-large
-    if: false
-
     steps:
 
       - name: Check disk space
