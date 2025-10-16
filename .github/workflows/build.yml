@@ -15,10 +15,14 @@ jobs:
 
       - name: Check disk space
         run: |
-          df . -h
+          echo free space query
+          df -h
+          echo where dotnet
           which dotnet
+          echo what installed
           brew list
-          df . -h   
+          echo space
+          df -h   
 
   build-ubuntu:
     name: Build on Ubuntu 22.04
